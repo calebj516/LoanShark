@@ -102,7 +102,7 @@
                   <input class="form-control" type="number" id="interestRate" />
                 </div>
                 <div class="col-12 mt-5 d-flex flex-row-reverse">
-                  <button class="btn btn-dark" type="button">Calculate</button>
+                  <button class="btn btn-dark" type="button" id="btnCalc">Calculate</button>
                 </div>
               </div>
             </div>
@@ -181,5 +181,8 @@
       crossorigin="anonymous"
     ></script>
     <script src="js/site.js"></script>
+    <script>
+      document.getElementById('btnCalc').addEventListener('click', getValues);
+    </script>
   </body>
 </html>

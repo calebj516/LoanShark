@@ -16,18 +16,26 @@ function calcResults(loan, term, intRate) {
 
   // Totals
   let monthlyPayment = loan * (intRate / 1200) / (1 - (1 + intRate / 1200) ** (-term));
-  // monthlyPayment = Math.round((monthlyPayment + Number.EPSILON) * 100) / 100;
+  monthlyPayment = +(Math.round((monthlyPayment + Number.EPSILON) * 100) / 100);
   let totalCost = monthlyPayment * term;
   let totalInterest = totalCost - loan;
+  totalInterest = +(Math.round((totalInterest + Number.EPSILON) * 100) / 100);
+
+  // Assign Totals
+  // Total monthly payment
+  document.getElementById('monthlyPayment').innerHTML = `$${monthlyPayment}`;
+  // Total principal
+  document.getElementById('principal').innerHTML = `$${loan}`;
+  // Total interest
+  document.getElementById('interest').innerHTML = `$${totalInterest}`;
+  // Total cost
+  document.getElementById('cost').innerHTML = `$${totalCost}`;
 
   // Monthly Totals
   let intPayment = loan * (intRate / 1200);
-  // intPayment = Math.round((intPayment + Number.EPSILON) * 100) / 100;
   let principal = monthlyPayment - intPayment;
-  // principal = Math.round((principal + Number.EPSILON) * 100) / 100;
   let accumulatedInterest = 0;
   let remainingBal = loan - monthlyPayment;
-  // remainingBal = Math.round((remainingBal + Number.EPSILON) * 100) / 100;
 
   // get the table body element from the page
   const tableBody = document.getElementById('results');
@@ -63,15 +71,15 @@ function calcResults(loan, term, intRate) {
     // cell 1 - Month
     rowCols[0].textContent = i;
     // cell 2
-    rowCols[1].textContent = monthlyPayment;
+    rowCols[1].textContent = `$${Math.round((monthlyPayment + Number.EPSILON) * 100) / 100}`;
     // cell 3
-    rowCols[2].textContent = principal;
+    rowCols[2].textContent = `$${Math.round((principal + Number.EPSILON) * 100) / 100}`;
     // cell 4
-    rowCols[3].textContent = intPayment;
+    rowCols[3].textContent = `$${Math.round((intPayment + Number.EPSILON) * 100) / 100}`;
     // cell 5
-    rowCols[4].textContent = (accumulatedInterest += intPayment);
+    rowCols[4].textContent = `$${Math.round(((accumulatedInterest += intPayment) + Number.EPSILON) * 100) / 100}`;
     // cell 6
-    rowCols[5].textContent = remainingBal;
+    rowCols[5].textContent = `$${Math.round((remainingBal + Number.EPSILON) * 100) / 100}`;
 
     // add all the rows to the table
     tableBody.appendChild(tableRow);

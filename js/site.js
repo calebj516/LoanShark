@@ -5,37 +5,35 @@ function getValues() {
   let term = +(document.getElementById('term').value);
   let rate = +(document.getElementById('interestRate').value);
 
-  const results = calcResults(loanAmt, term, rate);
+  calcResults(loanAmt, term, rate);
 }
 
-// calculate results
+// calculate and display results
 function calcResults(loan, term, intRate) {
 
-  // Rounding
-  // https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary
+  // Rounding - Format number to always show 2 decimal places
+  // https://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
 
   // Totals
-  let monthlyPayment = loan * (intRate / 1200) / (1 - (1 + intRate / 1200) ** (-term));
-  monthlyPayment = +(Math.round((monthlyPayment + Number.EPSILON) * 100) / 100);
+  let monthlyPayment = (loan * (intRate / 1200) / (1 - (1 + intRate / 1200) ** (-term)));
   let totalCost = monthlyPayment * term;
   let totalInterest = totalCost - loan;
-  totalInterest = +(Math.round((totalInterest + Number.EPSILON) * 100) / 100);
 
   // Assign Totals
   // Total monthly payment
-  document.getElementById('monthlyPayment').innerHTML = `$${monthlyPayment}`;
+  document.getElementById('monthlyPayment').innerText = `$${(Math.round(monthlyPayment * 100) / 100).toFixed(2)}`;
   // Total principal
-  document.getElementById('principal').innerHTML = `$${loan}`;
+  document.getElementById('principal').innerText = `$${(Math.round(loan * 100) / 100).toFixed(2)}`;
   // Total interest
-  document.getElementById('interest').innerHTML = `$${totalInterest}`;
+  document.getElementById('interest').innerText = `$${(Math.round(totalInterest * 100) / 100).toFixed(2)}`;
   // Total cost
-  document.getElementById('cost').innerHTML = `$${totalCost}`;
+  document.getElementById('cost').innerText = `$${(Math.round(totalCost * 100) / 100).toFixed(2)}`;
 
   // Monthly Totals
   let intPayment = loan * (intRate / 1200);
   let principal = monthlyPayment - intPayment;
+  let remainingBal = loan - principal;
   let accumulatedInterest = 0;
-  let remainingBal = loan - monthlyPayment;
 
   // get the table body element from the page
   const tableBody = document.getElementById('results');
@@ -57,37 +55,34 @@ function calcResults(loan, term, intRate) {
 
   tableBody.innerHTML = tableHeaderRow;
 
-  // loop: # of iterations = term (months), increment by one month each iteration
-  // Month: 1; Payment: monthlyPayment; Principal: calculate intPayment, subtract that from monthlypayment; Interest: intPayment; Total Interest: += intPayment
-
   for(let i = 1; i <= term; i++){
 
-    // import template element from app.html as a document fragment (essentially make a copy of it)
-    // true includes the node's descendants
+    // import template element from app.html (true includes the node's descendants)
     let tableRow = document.importNode(templateRow.content, true);
     // grab the td elements to put into an array
     let rowCols = tableRow.querySelectorAll('td');
 
     // cell 1 - Month
     rowCols[0].textContent = i;
-    // cell 2
-    rowCols[1].textContent = `$${Math.round((monthlyPayment + Number.EPSILON) * 100) / 100}`;
-    // cell 3
-    rowCols[2].textContent = `$${Math.round((principal + Number.EPSILON) * 100) / 100}`;
-    // cell 4
-    rowCols[3].textContent = `$${Math.round((intPayment + Number.EPSILON) * 100) / 100}`;
-    // cell 5
-    rowCols[4].textContent = `$${Math.round(((accumulatedInterest += intPayment) + Number.EPSILON) * 100) / 100}`;
-    // cell 6
-    rowCols[5].textContent = `$${Math.round((remainingBal + Number.EPSILON) * 100) / 100}`;
+    // cell 2 - Monthly Payment
+    rowCols[1].textContent = `$${(Math.round(monthlyPayment * 100) / 100).toFixed(2)}`;
+    // cell 3 - Principal
+    rowCols[2].textContent = `$${(Math.round(principal * 100) / 100).toFixed(2)}`;
+    // cell 4 - Interest
+    rowCols[3].textContent = `$${(Math.round(intPayment * 100) / 100).toFixed(2)}`;
+    // cell 5 - Total Interest
+    rowCols[4].textContent = `$${(Math.round((accumulatedInterest += +intPayment) * 100) / 100).toFixed(2)}`;
+    // cell 6 - Balance
+    rowCols[5].textContent = `$${(Math.round(remainingBal * 100) / 100).toFixed(2)}`;
 
     // add all the rows to the table
     tableBody.appendChild(tableRow);
 
     // update loan amount, intPayment, principal
-    remainingBal -= principal;
     intPayment = remainingBal * (intRate / 1200);
     principal = monthlyPayment - intPayment;
+    remainingBal -= principal;
+
   }
 
 }

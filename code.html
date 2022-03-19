@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="h-100">
   <head>
-    <title>App Name: A Coding Project By Caleb Jones</title>
+    <title>Loan Shark: A Coding Project By Caleb Jones</title>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta
@@ -37,7 +37,7 @@
     <!-- Nav Section -->
     <nav class="navbar navbar-expand-md navbar-dark fixed-top">
       <div class="container-fluid">
-        <a class="navbar-brand logoFont" href="index.html"> APP NAME</a>
+        <a class="navbar-brand logoFont" href="index.html"> Loan Shark</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -63,7 +63,7 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" target="_blank" href="#">Git Repo</a>
+              <a class="nav-link" target="_blank" href="https://github.com/calebj516/LoanShark">Git Repo</a>
             </li>
             <li class="nav-item">
               <a
@@ -81,25 +81,145 @@
     <main class="flex-shrink-0">
       <div class="container py-5 px-5 mt-5">
         <h2 class="border-1 border-bottom border-dark">
-          The Code for APP NAME.
+          The Code for Loan Shark.
         </h2>
         <div class="row row-cols-1 row-cols-lg-2">
           <div class="col-lg-8">
             <pre class="line-numbers">
                 <code class="language-javascript">
-                  // call Hello World
-                    function HelloWorld() {
-                      alert("Hello World!");
+                  // get values
+                  function getValues() {
+
+                    let loanAmt = +(document.getElementById('loanAmt').value);
+                    let term = +(document.getElementById('term').value);
+                    let rate = +(document.getElementById('interestRate').value);
+
+                    if(loanAmt && term && rate) {
+                      results(loanAmt, term, rate);
+                    } else {
+                      alert("Please fill out all three fields!");
                     }
+
+                  }
+
+                  // calculate and display results
+                  function results(loan, term, intRate) {
+
+                    // Rounding - Format number to always show 2 decimal places
+                    // https://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
+
+                    // Totals
+                    let monthlyPayment = (loan * (intRate / 1200) / (1 - (1 + intRate / 1200) ** (-term)));
+                    let totalCost = monthlyPayment * term;
+                    let totalInterest = totalCost - loan;
+
+                    // Assign Totals
+                    // Total monthly payment
+                    document.getElementById('monthlyPayment').innerText = `$${(Math.round(monthlyPayment * 100) / 100).toFixed(2)}`;
+                    // Total principal
+                    document.getElementById('principal').innerText = `$${(Math.round(loan * 100) / 100).toFixed(2)}`;
+                    // Total interest
+                    document.getElementById('interest').innerText = `$${(Math.round(totalInterest * 100) / 100).toFixed(2)}`;
+                    // Total cost
+                    document.getElementById('cost').innerText = `$${(Math.round(totalCost * 100) / 100).toFixed(2)}`;
+
+                    // Monthly Totals
+                    let intPayment = loan * (intRate / 1200);
+                    let principal = monthlyPayment - intPayment;
+                    let remainingBal = loan - principal;
+                    let accumulatedInterest = 0;
+
+                    // get the table body element from the page
+                    const tableBody = document.getElementById('results');
+                    // get the template row
+                    const templateRow = document.getElementById('resultTemplate');
+                    // clear table first
+                    tableBody.innerHTML = "";
+                    // append header row
+                    let tableHeaderRow = `
+                      &lt;tr>
+                        &lt;td>Month&lt;/td>
+                        &lt;td>Payment&lt;/td>
+                        &lt;td>Principal&lt;/td>
+                        &lt;td>Interest&lt;/td>
+                        &lt;td>Total Interest&lt;/td>
+                        &lt;td>Balance&lt;/td>
+                      &lt;/tr>
+                    `;
+
+                    tableBody.innerHTML = tableHeaderRow;
+
+                    for(let i = 1; i <= term; i++){
+
+                      // import template element from app.html (true includes the node's descendants)
+                      let tableRow = document.importNode(templateRow.content, true);
+                      // grab the td elements to put into an array
+                      let rowCols = tableRow.querySelectorAll('td');
+
+                      // cell 1 - Month
+                      rowCols[0].textContent = i;
+                      // cell 2 - Monthly Payment
+                      rowCols[1].textContent = `$${(Math.round(monthlyPayment * 100) / 100).toFixed(2)}`;
+                      // cell 3 - Principal
+                      rowCols[2].textContent = `$${(Math.round(principal * 100) / 100).toFixed(2)}`;
+                      // cell 4 - Interest
+                      rowCols[3].textContent = `$${(Math.round(intPayment * 100) / 100).toFixed(2)}`;
+                      // cell 5 - Total Interest
+                      rowCols[4].textContent = `$${(Math.round((accumulatedInterest += +intPayment) * 100) / 100).toFixed(2)}`;
+                      // cell 6 - Balance
+                      rowCols[5].textContent = `$${(Math.round(remainingBal * 100) / 100).toFixed(2)}`;
+
+                      // add all the rows to the table
+                      tableBody.appendChild(tableRow);
+
+                      // update loan amount, intPayment, principal
+                      intPayment = remainingBal * (intRate / 1200);
+                      principal = monthlyPayment - intPayment;
+                      remainingBal -= principal;
+
+                    }
+
+                  }
               </code>
             </pre>
           </div>
           <div class="col-lg-4">
-            <p>The Code is structured in one function.</p>
-            <h5>Hello World</h5>
+            <p>The Code is structured in two functions.</p>
+            <h5>Get Values</h5>
             <p>
-              Hello World is a function that displays an alert with a message of
-              "Hello World!"
+              Get Values is a function that retrieves the values entered by the
+              user from the page. If all three values are entered, the function
+              calls another function, results, to move the program along.
+            </p>
+            <h5>Results</h5>
+            <p>
+              Results is our second and final function, which receives as
+              arguments the amount of the loan, the term in months, and the
+              interest rate. <br />
+              <br />First, it calculates the grand totals, including the total
+              monthly payment, the total cost of the loan (calculated by taking
+              the monthly payment and multiplying the term), and the total
+              interest (calculated by subtracting the amount of the loan from
+              the total cost of the loan). <br />
+              <br />
+              Second, beginning on line 29, it assigns these grand totals to the
+              appropriate elements on the page. <br />
+              <br />
+              Third, beginning on line 38, it calculates the monthly totals
+              after the first month's payment. This will be the starting point
+              for calculating the values for the rest of the months in a for
+              loop later on in the program. <br />
+              <br />
+              Fourth, starting on line 50 and ending on line 61, the function
+              appends the first row of the table to the results, containing the
+              headers. <br />
+              <br />
+              Lastly, on lines 63 through 91, the function determines the
+              payment information for each month, up through and including the
+              final month of the term. Each value is rounded and displayed out
+              to two decimal places. Finally, on lines 87 through 89, the loan
+              amount, principal, and remaining balance are updated in
+              preparation for the next iteration of the loop.
             </p>
           </div>
         </div>
@@ -108,10 +228,8 @@
     <!-- Footer Section -->
     <footer class="footer mt-auto py-3">
       <div class="container-fluid">
-        <div class="row row-cols-1 row-cols-lg-3 gy-2">
-          <div
-            class="col order-last order-lg-first d-flex align-items-center text-light"
-          >
+        <div class="row row-cols-md-3 row-cols-lg-3 row-cols-1 gy-2">
+          <div class="col order-lg-first d-flex align-items-center text-light">
             <div>
               <span class="text-muted">&copy;2022</span> Caleb Jones |
               calebj516@gmail.com

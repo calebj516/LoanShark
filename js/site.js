@@ -5,11 +5,16 @@ function getValues() {
   let term = +(document.getElementById('term').value);
   let rate = +(document.getElementById('interestRate').value);
 
-  calcResults(loanAmt, term, rate);
+  if(loanAmt && term && rate) {
+    results(loanAmt, term, rate);
+  } else {
+    alert("Please fill out all three fields!");
+  }
+
 }
 
 // calculate and display results
-function calcResults(loan, term, intRate) {
+function results(loan, term, intRate) {
 
   // Rounding - Format number to always show 2 decimal places
   // https://stackoverflow.com/questions/6134039/format-number-to-always-show-2-decimal-places
